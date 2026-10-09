@@ -1,0 +1,249 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hex, Brouwer, and the fairest coin</title>
+<meta name="description" content="Play Hex, walk through the proof that it can never end in a draw, see how David Gale turned that into Brouwer's fixed-point theorem, and watch a random board land on exactly 1/2.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400..700;1,6..72,400..700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header class="site">
+  <nav>
+    <a class="wordmark" href="#top">Hex &amp; Brouwer</a>
+    <a class="nav-link" href="#play">Play</a>
+    <a class="nav-link" href="#no-draws">No draws</a>
+    <a class="nav-link" href="#brouwer">Brouwer</a>
+    <a class="nav-link" href="#percolation">The fair coin</a>
+    <a class="nav-link" href="#notes">Sources</a>
+  </nav>
+</header>
+
+<main id="top">
+
+<div class="hero col">
+  <h1>Hex, Brouwer, and the fairest coin</h1>
+  <p class="dek">A board game that cannot end in a draw, the topology hiding inside that fact, and a probability that comes out as exactly one half.</p>
+</div>
+
+<!-- ============================ PLAY ============================ -->
+<section id="play">
+  <div class="col">
+    <h2>First, play</h2>
+    <p>Hex was invented twice: by the Danish poet and designer Piet Hein, who published it as <i>Polygon</i> in the newspaper <i>Politiken</i> in December 1942, and again by John Nash as a graduate student at Princeton around 1948. Martin Gardner's July 1957 <i>Scientific American</i> column made it famous.</p>
+    <p>The rules fit in a breath. Two players take turns placing stones on empty cells. Black owns the top and bottom edges, White owns the left and right. The first player to connect their two edges with an unbroken chain of their stones wins. Stones never move and are never captured.</p>
+  </div>
+  <div class="col-wide">
+    <div class="panel">
+      <div class="controls">
+        <label class="ctl">Board
+          <select id="play-size">
+            <option value="7">7 × 7</option>
+            <option value="9">9 × 9</option>
+            <option value="11" selected>11 × 11</option>
+            <option value="13">13 × 13</option>
+          </select>
+        </label>
+        <button class="secondary" id="play-undo">Undo</button>
+        <button id="play-new">New game</button>
+        <span class="spacer"></span>
+        <p class="status" id="play-status"></p>
+      </div>
+      <div class="board-wrap" id="play-board"></div>
+    </div>
+  </div>
+  <div class="col">
+    <p class="aside">Hex strongly favours the first player — Nash proved, by his famous strategy-stealing argument, that the first player has a winning strategy on any board, though nobody knows what it is for boards of serious size. Serious play uses the <i>swap rule</i>: after the first stone, the second player may choose to take it over. Here it's just the two of you at one keyboard, so settle it however you like.</p>
+    <p>Play a game or two to the end. You will notice something, or rather you won't: there is no way for the game to finish undecided. No final position is a stalemate, no board fills up with neither player connected. That observation is a theorem, and it is the hinge of everything below.</p>
+  </div>
+</section>
+
+<!-- ============================ NO DRAWS ============================ -->
+<section id="no-draws">
+  <div class="col">
+    <h2>Why there are no draws</h2>
+    <p class="theorem"><span class="tag">Hex theorem.</span>Fill every cell of a Hex board with black and white stones, in any way whatsoever. Then exactly one of the players has a winning chain.</p>
+    <p>Hein already knew this in 1942 — it was one of his design requirements for the game — and Nash proved it. The proof below is the one David Gale gave in 1979, and it earns its keep: the same argument, run on a fine enough board, will later hand us Brouwer's fixed-point theorem.</p>
+    <p>It shows two things separately: <em>at least one</em> player has a chain (no draws), and <em>at most one</em> does (no double wins). The walkthrough proves the first and harder half; the second is dealt with at the end.</p>
+  </div>
+  <div class="col-wide">
+    <div class="panel">
+      <div class="stepper">
+        <div>
+          <div class="board-wrap" id="proof-board"></div>
+        </div>
+        <div class="step-text">
+          <span class="step-count" id="proof-count"></span>
+          <div id="proof-text"></div>
+          <figure class="lemma-figure" id="proof-figure" hidden>
+            <div id="proof-figure-svg"></div>
+            <figcaption id="proof-figure-caption"></figcaption>
+          </figure>
+          <div class="step-nav">
+            <button class="secondary" id="proof-back">Back</button>
+            <button id="proof-next">Next</button>
+            <span class="spacer"></span>
+            <button class="secondary" id="proof-shuffle">New random board</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col">
+    <h3>At most one winner</h3>
+    <p>The other half of the theorem says Black and White cannot both have a chain. It looks obvious: a black chain from top to bottom is a wall, and a white chain from left to right would have to pass through it, which adjacency forbids. The honest footnote is that "a wall separates the two sides" is exactly the kind of obvious statement that topology teaches you to distrust — it is a discrete cousin of the Jordan curve theorem. It is true, and it can be proven by elementary induction; Huneke gives a short, careful proof in the <i>Monthly</i> (2014). For this project we take the intuition, flag it as the one place we lean on a cited result, and move on.</p>
+    <p>So: at least one winner, at most one winner. Every full board decides the game. Keep hold of the picture of the walk between the colours — it is about to become a walk through the unit square.</p>
+  </div>
+</section>
+
+<!-- ============================ BROUWER ============================ -->
+<section id="brouwer">
+  <div class="col">
+    <h2>From a board game to Brouwer</h2>
+    <p class="theorem"><span class="tag">Brouwer's fixed-point theorem (in the plane).</span>Every continuous map <i>f</i> from the unit square to itself has a fixed point: some point <i>x</i> with <i>f</i>(<i>x</i>) = <i>x</i>.</p>
+    <p>Stir a cup of coffee, and when it settles some point of the liquid surface is back where it started. Lay a map of a city on the ground anywhere inside that city, and some point of the map lies exactly over the point it represents. Brouwer proved the theorem in the early 1900s with the heavy machinery of algebraic topology.</p>
+    <p>In 1979 David Gale — the same Gale to whom Nash had first shown Hex at Princeton thirty years earlier — published a paper with a disarming claim: the two-dimensional Brouwer theorem <em>is</em> the Hex theorem, in the sense that each follows from the other by elementary arguments. Here is his direction, from the game to the topology.</p>
+
+    <h3>The argument</h3>
+    <p>Fix any &epsilon; &gt; 0. We will not hunt for an exact fixed point directly; we will find an <em>approximate</em> one — a point that moves less than &epsilon; — and let compactness finish the job.</p>
+    <p>Continuity on a compact square is uniform, so there is a &delta; &gt; 0 with |<i>f</i>(<i>x</i>) − <i>f</i>(<i>y</i>)| &lt; &epsilon; whenever |<i>x</i> − <i>y</i>| &lt; &delta;. Shrink &delta; further, if needed, so that &delta; &lt; &epsilon; as well — that second condition costs nothing and is what makes both steps below work. Now lay a Hex board over the square with cells of diameter less than &delta;, so neighbouring centres are less than &delta; apart.</p>
+    <p>Colour each cell by how far <i>f</i> pushes its centre <i>x</i>, one coordinate at a time:</p>
+    <ul>
+      <li>if the horizontal move is at least &epsilon; — that is, |<i>f</i><sub>1</sub>(<i>x</i>) − <i>x</i><sub>1</sub>| &ge; &epsilon; — colour the cell <b>white</b>, White being the player who joins left to right;</li>
+      <li>otherwise, if the vertical move is at least &epsilon;, colour it <b>black</b>, Black being the player who joins top to bottom;</li>
+      <li>if neither, leave it blank.</li>
+    </ul>
+    <p>Note which player gets which direction: the horizontal pushers are given the horizontal crossing. That pairing is the whole trick, and the argument collapses without it.</p>
+    <p><b>White cannot win.</b> Split White's cells into east-movers, with <i>f</i><sub>1</sub>(<i>x</i>) − <i>x</i><sub>1</sub> &ge; &epsilon;, and west-movers, with <i>x</i><sub>1</sub> − <i>f</i><sub>1</sub>(<i>x</i>) &ge; &epsilon;. First: <em>no east-mover is adjacent to a west-mover.</em> Suppose <i>x</i> is an east-mover and its neighbour <i>y</i> a west-mover. Their centres lie within &delta;, so |<i>f</i>(<i>x</i>) − <i>f</i>(<i>y</i>)| &lt; &epsilon;, and also |<i>x</i><sub>1</sub> − <i>y</i><sub>1</sub>| &lt; &delta; &lt; &epsilon;. Add three inequalities — <i>x</i><sub>1</sub> − <i>y</i><sub>1</sub> &gt; −&epsilon;, then <i>f</i><sub>1</sub>(<i>x</i>) − <i>x</i><sub>1</sub> &ge; &epsilon;, then <i>y</i><sub>1</sub> − <i>f</i><sub>1</sub>(<i>y</i>) &ge; &epsilon; — and the left sides telescope to give <i>f</i><sub>1</sub>(<i>x</i>) − <i>f</i><sub>1</sub>(<i>y</i>) &gt; &epsilon;. So |<i>f</i>(<i>x</i>) − <i>f</i>(<i>y</i>)| &gt; &epsilon;, which is exactly what uniform continuity forbids. A connected white chain is therefore all east-movers or all west-movers.</p>
+    <p>Second: <em>an east-mover cannot touch the right edge.</em> A cell meeting that edge has its centre within &delta; of it, and <i>f</i> cannot push a point past the edge of the square, so <i>f</i><sub>1</sub>(<i>x</i>) − <i>x</i><sub>1</sub> &le; &delta; &lt; &epsilon;. Symmetrically, no west-mover touches the left edge. A white chain is single-caste, so it misses one of the two edges it must reach. White cannot win.</p>
+    <p><b>Black cannot win</b>, by the identical argument with the two coordinates exchanged.</p>
+    <p><b>But the Hex theorem says somebody wins on a full board.</b> So the board is not full: at least one cell was left blank. Its centre <i>x</i> moves less than &epsilon; horizontally and less than &epsilon; vertically, so |<i>f</i>(<i>x</i>) − <i>x</i>| &lt; &epsilon;&radic;2. The blank cell <em>is</em> the approximate fixed point — it exists precisely because the two players have been set an impossible task.</p>
+    <p>&epsilon; was arbitrary. Take &epsilon;<sub><i>n</i></sub> → 0 with points <i>x</i><sub><i>n</i></sub> moved less than &epsilon;<sub><i>n</i></sub>&radic;2; the square is compact, so a subsequence converges to some <i>x</i>*, and continuity gives <i>f</i>(<i>x</i>*) = <i>x</i>*. That is Brouwer's theorem — out of a board game.</p>
+  </div>
+  <div class="col-wide">
+    <div class="panel">
+      <div class="controls">
+        <label class="ctl">Map
+          <select id="gale-map">
+            <option value="swirl" selected>Swirl toward the centre</option>
+            <option value="shear">Shear and squeeze</option>
+            <option value="fold">Fold toward a corner</option>
+          </select>
+        </label>
+        <label class="ctl">Mesh
+          <select id="gale-mesh">
+            <option value="14">Coarse</option>
+            <option value="24" selected>Fine</option>
+            <option value="40">Very fine</option>
+          </select>
+        </label>
+        <label class="ctl">&epsilon; = <span class="num" id="gale-eps-label">0.080</span>
+          <input type="range" id="gale-eps" min="20" max="200" value="80" step="1">
+        </label>
+        <span class="spacer"></span>
+        <p class="status" id="gale-status"></p>
+      </div>
+      <div class="field-wrap"><canvas id="gale-canvas" width="640" height="640"></canvas></div>
+      <div class="legend">
+        <span class="key"><span class="swatch" style="background:var(--stone-white)"></span> White: pushed sideways by ≥ &epsilon;</span>
+        <span class="key"><span class="swatch" style="background:var(--stone-black)"></span> Black: pushed up or down by ≥ &epsilon;</span>
+        <span class="key"><span class="swatch" style="background:var(--gold-fill); border-color:var(--gold)"></span> blank: moves less than &epsilon; both ways — an approximate fixed point</span>
+      </div>
+    </div>
+  </div>
+  <div class="col">
+<p>The widget colours a real map of the square by exactly this rule, at an &epsilon; you control. You cannot feed it a counterexample, because the theorem says there are none — shrink &epsilon; and the blank cells never vanish; they close in on the fixed point. Watch too that no white region ever spans left to right and no black region ever spans top to bottom, however the map twists. The blank cells are not a gap in the colouring: they are the conclusion.</p>
+    <p class="aside">For legibility the widget draws a square grid rather than a hex board; the cells’ adjacency is what the theorem actually uses, so the honest check is in the repository’s test suite, which runs this same colouring on a real Hex board and confirms with the site’s own win detection that neither player ever crosses.</p>
+    <p class="aside">Gale's paper proves the converse too — Brouwer's theorem implies the Hex theorem — which is why its title speaks of equivalence, and he extends both to <i>n</i> dimensions. The same path-following idea reappears across mathematics: in Sperner's lemma, and in the algorithms of Scarf and others for actually computing fixed points, which is roughly how the connection earns its living in economics.</p>
+  </div>
+</section>
+
+<!-- ============================ PERCOLATION ============================ -->
+<section id="percolation">
+  <div class="col">
+    <h2>The fairest coin: a probability of exactly ½</h2>
+    <p>Forget the players. Take an <i>n</i> × <i>n</i> board and colour every cell independently at random — black with probability <i>p</i>, white otherwise. This is <i>site percolation</i>: physicists use exactly this model (random black cells on exactly this lattice, the triangular one) to study fluid seeping through rock and the sudden appearance of large-scale connections in random media.</p>
+    <p class="theorem"><span class="tag">Claim.</span>On a square <i>n</i> × <i>n</i> board with <i>p</i> = ½, the probability that Black has a top-to-bottom crossing is exactly ½. Not approximately, not asymptotically — exactly, for every <i>n</i>.</p>
+    <p>Exact answers are rare in percolation, and this one needs no computation at all. It needs two ingredients.</p>
+    <p><b>One: somebody always crosses.</b> A random colouring is just a full Hex board, so the Hex theorem applies: exactly one of the events "Black crosses top-to-bottom" and "White crosses left-to-right" occurs. The two probabilities sum to 1.</p>
+    <p><b>Two: the two events are mirror images.</b> Transpose the board — swap rows with columns, which reflects it across the diagonal through the corner where Black's top edge meets White's left edge — and then swap every stone's colour. Transposing respects the cells' adjacency, so on a square board this transformation maps board colourings to board colourings, and it turns each black top-to-bottom crossing into a white left-to-right crossing and vice versa. At <i>p</i> = ½ it also preserves probabilities, because every single colouring is equally likely and we have merely shuffled them. So the two events, "Black crosses" and "White crosses", have the same probability.</p>
+    <p>Two numbers that sum to 1 and are equal. Each is ½.</p>
+  </div>
+  <div class="col-wide">
+    <div class="panel">
+      <div class="controls">
+        <label class="ctl">Board
+          <select id="perc-size">
+            <option value="7">7 × 7</option>
+            <option value="11" selected>11 × 11</option>
+            <option value="21">21 × 21</option>
+            <option value="35">35 × 35</option>
+          </select>
+        </label>
+        <label class="ctl"><span><i>p</i> = <span class="num" id="perc-p-label">0.50</span></span>
+          <input type="range" id="perc-p" min="0" max="100" value="50" step="1">
+        </label>
+        <button class="secondary" id="perc-one">One board</button>
+        <button id="perc-run">Run 10,000 boards</button>
+        <button class="secondary" id="perc-stop" disabled>Stop</button>
+        <button class="secondary" id="perc-reset">Reset tally</button>
+      </div>
+      <div class="perc-grid">
+        <div>
+          <div class="board-wrap" id="perc-board"></div>
+          <p class="status" id="perc-board-status"></p>
+        </div>
+        <div>
+          <div class="readout" id="perc-readout"></div>
+          <canvas class="chart" id="perc-chart" width="640" height="300"></canvas>
+          <p class="status">Running frequency of a black crossing, against boards sampled.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col">
+    <p>Run the sampler at <i>p</i> = 0.50 and watch the frequency pin itself to the line. Then break the symmetry: nudge <i>p</i> to 0.45 or 0.55. The argument above silently used "all colourings equally likely", which is only true at ½, and the simulation shows how little slack there is — the larger the board, the more violently the crossing probability snaps toward 0 or 1 as <i>p</i> leaves ½. That sharpening is a real theorem too: ½ is the <i>critical probability</i> of this lattice, and in the fine-mesh limit the crossing probabilities of regions were pinned down exactly by Smirnov's 2001 proof of Cardy's formula — triangular-lattice site percolation, this very model, is the one case where that is proven.</p>
+    <p>One more thing worth noticing: the no-draw theorem is doing quiet work even away from ½. At any <i>p</i>, the probability that Black crosses and the probability that White crosses still sum to exactly 1, because exactly one of them always happens. The fair coin at <i>p</i> = ½ is just the moment the two halves are forced to be equal.</p>
+    <p class="aside">The square board matters. On an <i>n</i> × (<i>n</i>+1) board, with Black crossing the short way, the diagonal-reflection trick breaks and Black's probability exceeds ½ — fairness is a consequence of symmetry, not a general law.</p>
+  </div>
+</section>
+
+<!-- ============================ NOTES ============================ -->
+<section id="notes">
+  <div class="col">
+    <h2>Notes &amp; sources</h2>
+    <p>Everything on this page is classical mathematics; the aim is exposition, not novelty. The claims divide cleanly into what is proven above and what is cited: the no-draw half of the Hex theorem and the derivation of Brouwer's theorem are proven in full following Gale; the at-most-one-winner half is argued informally and cited to Huneke; the exactly-½ result is proven in full from the two ingredients; the statements about the critical probability and Cardy's formula are cited context, not used by anything else here.</p>
+    <p>The code behind this page — board logic, the path-tracing proof, and the simulator — is tested: the ½ result and the no-draw theorem are verified by exhaustive enumeration of all colourings on small boards, and the path trace is checked against independent win detection on thousands of random boards. See the repository for the test suite.</p>
+    <ol class="sources">
+      <li>David Gale, <i>The Game of Hex and the Brouwer Fixed-Point Theorem</i>, The American Mathematical Monthly 86 (10), 1979, pp. 818–827. <a href="https://doi.org/10.2307/2320146" rel="noopener">doi:10.2307/2320146</a></li>
+      <li>Craig Huneke, <i>An Inductive Proof of Hex Uniqueness</i>, The American Mathematical Monthly 121 (1), 2014, pp. 78–80. <a href="https://doi.org/10.4169/amer.math.monthly.121.01.078" rel="noopener">doi:10.4169/amer.math.monthly.121.01.078</a></li>
+      <li>Martin Gardner, <i>Concerning the game of Hex, which may be played on the tiles of the bathroom floor</i>, Mathematical Games, Scientific American, July 1957. Reprinted in <i>The Scientific American Book of Mathematical Puzzles and Diversions</i>, Simon &amp; Schuster, 1959.</li>
+      <li>Ryan B. Hayward and Bjarne Toft, <i>Hex: The Full Story</i>, CRC Press, 2019 — the history: Hein, Politiken 1942, Nash at Princeton, and the Gardner correspondence.</li>
+      <li>Stanislav Smirnov, <i>Critical percolation in the plane: conformal invariance, Cardy's formula, scaling limits</i>, C. R. Acad. Sci. Paris Sér. I Math. 333 (3), 2001, pp. 239–244.</li>
+      <li>Béla Bollobás and Oliver Riordan, <i>Percolation</i>, Cambridge University Press, 2006 — background on site percolation on the triangular lattice and its critical probability.</li>
+    </ol>
+  </div>
+</section>
+
+</main>
+
+<footer class="site">
+  <div class="col">
+    <p>Diego Rapini, Luigi Lanni, Massimiliano Iorio.</p>
+    <p>Source code, test suite, and references: <a id="repo-link" href="https://github.com/diegor117/hex-brouwer-percolation" rel="noopener">GitHub repository</a> · MIT license.</p>
+  </div>
+</footer>
+
+<script src="js/hex.js"></script>
+<script src="js/board-svg.js"></script>
+<script src="js/maps.js"></script>
+<script src="js/play.js"></script>
+<script src="js/proof.js"></script>
+<script src="js/gale.js"></script>
+<script src="js/percolation.js"></script>
+</body>
+</html>
