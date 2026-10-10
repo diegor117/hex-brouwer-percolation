@@ -21,10 +21,10 @@
     return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
   };
   var COL = {
-    cobalt: css("--cobalt") || "#2847c8",
-    ink: css("--ink") || "#191b1f",
+    accent: css("--accent") || "#c62828",
+    ink: css("--text") || "#222222",
     muted: css("--muted") || "#6e6a5d",
-    grid: css("--line-soft") || "#e4dfd2"
+    grid: css("--border-soft") || "#e5e5e5"
   };
 
   var tally = { trials: 0, black: 0, series: [] }; // series: [trials, freq]
@@ -63,22 +63,23 @@
       if (poly) poly.classList.add("chain");
     });
     boardStatus.innerHTML = w === Hex.BLACK
-      ? "<strong>Black crosses</strong> top to bottom on this board."
-      : "<strong>White crosses</strong> left to right on this board — so Black does not.";
+      ? "<strong>Black</strong> crosses top to bottom on this board."
+      : "<strong>White</strong> crosses left to right on this board.";
   }
 
   function updateReadout() {
     var freq = tally.trials ? tally.black / tally.trials : NaN;
     var se = tally.trials ? Math.sqrt(freq * (1 - freq) / tally.trials) : NaN;
     var exact = Math.abs(p() - 0.5) < 1e-9
-      ? "exactly 1/2 (theorem above)"
-      : "unknown in general — but 1 minus White's, always";
-    readoutEl.innerHTML =
-      '<div><span class="label">boards sampled</span><br>' + tally.trials.toLocaleString() + "</div>" +
-      '<div><span class="label">with a black crossing</span><br>' + tally.black.toLocaleString() + "</div>" +
-      '<div><span class="label">frequency</span><br>' +
-        (tally.trials ? freq.toFixed(4) + " ± " + se.toFixed(4) : "—") + "</div>" +
-      '<div><span class="label">true probability at this p</span><br>' + exact + "</div>";
+      ? "1/2 exactly (Theorem 4.1)"
+      : "no closed form; \u03b8(p) + \u03b8(1 \u2212 p) = 1";
+    var row = function (k, v) { return "<tr><td>" + k + "</td><td>" + v + "</td></tr>"; };
+    readoutEl.innerHTML = "<table>" +
+      row("boards sampled", tally.trials.toLocaleString()) +
+      row("with a black crossing", tally.black.toLocaleString()) +
+      row("frequency", tally.trials ? freq.toFixed(4) + " \u00b1 " + se.toFixed(4) : "n/a") +
+      row("exact probability", exact) +
+      "</table>";
   }
 
   function drawChart() {
@@ -115,7 +116,7 @@
     ctx.fillText(maxLabel, W - padR - ctx.measureText(maxLabel).width, H - 8);
 
     if (tally.series.length > 1) {
-      ctx.strokeStyle = COL.cobalt;
+      ctx.strokeStyle = COL.accent;
       ctx.lineWidth = 2;
       ctx.beginPath();
       for (var i = 0; i < tally.series.length; i++) {

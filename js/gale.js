@@ -26,9 +26,9 @@
   var COLORS = {
     black: css("--stone-black") || "#1c1e22",
     white: css("--stone-white") || "#ffffff",
-    gold: css("--gold-fill") || "#e8c45a",
-    line: css("--line") || "#d4cebe",
-    ink: css("--ink") || "#191b1f"
+    blank: css("--blank") || "#9e9e9e",
+    line: css("--border-soft") || "#e5e5e5",
+    ring: css("--accent") || "#c62828"
   };
 
   function eps() { return parseInt(epsSlider.value, 10) / 1000; }
@@ -76,7 +76,7 @@
         var color;
         if (Math.abs(dx) >= e) color = COLORS.white;
         else if (Math.abs(dy) >= e) color = COLORS.black;
-        else { color = COLORS.gold; blanks++; }
+        else { color = COLORS.blank; blanks++; }
 
         ctx.fillStyle = color;
         // y flipped so the unit square reads the usual way up.
@@ -95,18 +95,16 @@
     ctx.beginPath();
     ctx.arc(px, py, Math.max(cw, 14), 0, 2 * Math.PI);
     ctx.lineWidth = 3;
-    ctx.strokeStyle = COLORS.ink;
+    ctx.strokeStyle = COLORS.ring;
     ctx.stroke();
 
     if (!hypothesisHolds) {
-      statusEl.innerHTML = "Mesh too coarse for this \u03b5: adjacent centres land " +
-        "<span class=\"num\">" + maxJump.toFixed(3) + "</span> apart under " +
-        "<i>f</i>, which must stay below \u03b5. Refine the mesh or raise \u03b5 \u2014 " +
-        "the argument says nothing here.";
+      statusEl.innerHTML = "Mesh too coarse for this \u03b5: adjacent points are mapped up to " +
+        "<span class=\"num\">" + maxJump.toFixed(3) + "</span> apart, which is not less than \u03b5, " +
+        "so the lemma does not apply. Use a finer mesh or a larger \u03b5.";
     } else {
-      statusEl.innerHTML = "Mesh fine enough (<span class=\"num\">" + maxJump.toFixed(3) +
-        "</span> &lt; \u03b5). Blank cells: <span class=\"num\">" + blanks +
-        "</span> \u2014 the argument guarantees at least one.";
+      statusEl.innerHTML = "Adjacent points are mapped at most <span class=\"num\">" + maxJump.toFixed(3) +
+        "</span> apart (less than \u03b5). Uncoloured cells: <span class=\"num\">" + blanks + "</span>.";
     }
   }
 

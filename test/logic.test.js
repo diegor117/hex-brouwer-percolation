@@ -133,27 +133,52 @@ console.log("endpoint stats:", endpointStats);
   console.log(`11x11 Monte Carlo: ${blackWins}/${trials} = ${freq.toFixed(4)} (expected 0.5000)`);
 }
 
-// 5. Asymmetric boards are NOT fair at p = 0.5 — sanity check that the
-//    symmetry argument really needs the square board. (n x m board stored as
-//    square with one extra white column is awkward; instead shrink black's
-//    task: black crossing on the top n-1 rows of an n x n board.)
-//    Skipped: covered conceptually in the write-up.
-
-if (failures === 0) {
-  console.log("\nAll checks passed.");
-} else {
-  console.error(`\n${failures} check(s) FAILED.`);
-  process.exit(1);
+// 5. Rectangular boards are not fair at p = 0.5, which shows that the
+//    symmetry argument needs a square board. Enumerate every colouring of an
+//    R x C board (R rows, C columns) with the same adjacency as the Hex board.
+//    Black crosses R rows, White crosses C columns; with R < C Black has the
+//    shorter distance and should cross in more than half of the colourings.
+function rectCrossing(cells, R, C, color) {
+  const seen = new Uint8Array(R * C);
+  const stack = [];
+  for (let i = 0; i < (color === BLACK ? C : R); i++) {
+    const [r, c] = color === BLACK ? [0, i] : [i, 0];
+    if (cells[r * C + c] === color) { stack.push([r, c]); seen[r * C + c] = 1; }
+  }
+  while (stack.length) {
+    const [r, c] = stack.pop();
+    if (color === BLACK ? r === R - 1 : c === C - 1) return true;
+    for (const [dr, dc] of Hex.DIRS) {
+      const nr = r + dr, nc = c + dc;
+      if (nr < 0 || nr >= R || nc < 0 || nc >= C) continue;
+      const k = nr * C + nc;
+      if (!seen[k] && cells[k] === color) { seen[k] = 1; stack.push([nr, nc]); }
+    }
+  }
+  return false;
+}
+for (const [R, C] of [[2, 3], [3, 4], [4, 5]]) {
+  const total = 2 ** (R * C);
+  const cells = new Int8Array(R * C);
+  let black = 0, white = 0;
+  for (let mask = 0; mask < total; mask++) {
+    for (let i = 0; i < R * C; i++) cells[i] = (mask >> i) & 1 ? BLACK : WHITE;
+    const b = rectCrossing(cells, R, C, BLACK), w = rectCrossing(cells, R, C, WHITE);
+    assert(b !== w, `${R}x${C} mask=${mask}: expected exactly one crossing`);
+    if (b) black++; else white++;
+  }
+  assert(black > total / 2, `${R}x${C}: black crossings ${black} should exceed half of ${total}`);
+  console.log(`${R}x${C} board: black (shorter side) crosses in ${black}/${total} = ${(black / total).toFixed(4)}`);
 }
 
 // 6. The Brouwer colouring (Gale's argument), checked on a real Hex board.
 //    Colour an n x n Hex board from a continuous self-map f of the unit
-//    square by the rule in the write-up:
+//    square by the rule in the paper (Lemma 3.2):
 //        White  if |f1(x) - x1| >= eps   (White joins left to right)
 //        Black  else if |f2(x) - x2| >= eps   (Black joins top to bottom)
 //        blank  otherwise.
 //    The proof claims neither player can have a crossing, so at least one
-//    cell must be left blank — and that blank cell is an approximate fixed
+//    cell must be left blank, and that blank cell is an approximate fixed
 //    point. We verify the hypothesis numerically (adjacent centres really do
 //    land within eps of each other under f) and then assert the conclusion
 //    using the same win detection the site uses.
@@ -222,6 +247,37 @@ if (failures === 0) {
       }
     }
   }
-  assert(cases > 0, "no Brouwer colouring case satisfied the hypothesis — test vacuous");
-  console.log(`brouwer colouring: ${cases} (map, mesh, eps) cases — neither player ever crosses, blanks always exist`);
+  assert(cases > 0, "no Brouwer colouring case satisfied the hypothesis, so the test is vacuous");
+  console.log(`brouwer colouring: ${cases} (map, mesh, eps) cases: neither player ever crosses, blanks always exist`);
+}
+
+// 7. The assignment of directions matters. With the reversed rule (cells with
+//    large horizontal displacement given to Black) the argument breaks, and
+//    for the "fold" map the colouring does contain a black crossing.
+{
+  const Maps = require("../js/maps.js");
+  const f = Maps.fold;
+  for (const n of [40, 60, 80]) {
+    for (const eps of [0.15, 0.25, 0.4]) {
+      const b = new Board(n);
+      for (let r = 0; r < n; r++) {
+        for (let c = 0; c < n; c++) {
+          const x1 = (c + 0.5) / n, x2 = 1 - (r + 0.5) / n;
+          const fx = f(x1, x2);
+          if (Math.abs(fx[0] - x1) >= eps) b.set(r, c, BLACK);
+          else if (Math.abs(fx[1] - x2) >= eps) b.set(r, c, WHITE);
+        }
+      }
+      assert(Hex.winner(b) === BLACK,
+        `fold n=${n} eps=${eps}: reversed rule was expected to give a black crossing`);
+    }
+  }
+  console.log("reversed rule: fold gives a black crossing for all 9 (mesh, eps) cases");
+}
+
+if (failures === 0) {
+  console.log("\nAll checks passed.");
+} else {
+  console.error(`\n${failures} check(s) FAILED.`);
+  process.exit(1);
 }

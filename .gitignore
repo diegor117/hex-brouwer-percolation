@@ -1,6 +1,14 @@
 .DS_Store
 node_modules/
 
-# Private verification checklist — stays local
+# Private verification checklist (stays local)
 TODO.md
 .Rhistory
+
+# LaTeX build files
+paper/*.aux
+paper/*.log
+paper/*.out
+paper/*.fls
+paper/*.fdb_latexmk
+paper/*.synctex.gz

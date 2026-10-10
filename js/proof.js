@@ -21,31 +21,31 @@
 
   var steps = [
     {
-      text: "<p>Here is a board filled completely at random — think of it as a finished game whose move order we've forgotten, or as a game played by two people with no idea what they're doing. The claim: however the stones fell, someone has won. Shuffle it as often as you like; the argument below never cares which board it gets.</p>",
+      text: "<p>A completely filled board with a random colouring.</p>",
       borders: false
     },
     {
-      text: "<p>First, a framing trick. Surround the board with make-believe stones: a row of black above and below (those are Black's edges, after all) and a column of white on the left and right. This changes nothing — the fake stones only make Black's and White's edges into stones like any others — but now every claim about edges becomes a claim about stones.</p>",
+      text: "<p>Add the frame: black rows above and below the board, white columns on the left and right.</p>",
       borders: true
     },
     {
-      text: "<p>Now mark every tile edge that separates a black stone from a white one — every piece of fence between the two colours, the fake border stones included. These gold fences are the whole proof. Look at what they form: they never branch, never stop in the open, and almost everywhere they close up into loops. Almost.</p>",
+      text: "<p>Draw every fence, that is, every tile edge between a black cell and a white cell, including the frame cells.</p>",
       borders: true, sep: true
     },
     {
-      text: "<p>Why no branching? Zoom in on any corner point of the tiling: exactly three tiles meet there. If all three share a colour, no fence touches the point. Otherwise the colours split two against one, and then exactly two of the three edges at that point are fences — one in, one out. A fence through any interior point passes through; it cannot fork and cannot dead-end. This is the only place the hexagonal shape of the cells is used, and it is the reason the game is played on hexagons: four squares can meet at a corner, and fences there could cross or stall.</p>",
+      text: "<p>Three cells meet at each vertex. If their colours split two against one, exactly two fences meet there; if all three agree, none do. So an interior vertex has 0 or 2 fences.</p>",
       borders: true, sep: true, figure: true
     },
     {
-      text: "<p>There are exactly four points where the fences are allowed to end: the four corners of the framed board, where the fake black stones meet the fake white ones head on. Start at the top-left corner and walk the fence, black on one shoulder, white on the other.</p>",
+      text: "<p>Exactly four vertices have one fence, one near each corner. The walk starts at the one in the top-left corner.</p>",
       borders: true, animate: true
     },
     {
-      text: "<p>Where can the walk end? Not in the interior — every interior point lets it pass through. Not by returning to a point it has visited — each point has at most two fence edges, both already used. The board is finite, so the walk cannot go on forever. The only option left: it terminates at another corner of the board. Follow it with your eye — one unbroken line from corner to corner.</p>",
+      text: "<p>The walk cannot branch and cannot revisit a vertex, and the board is finite, so it ends at one of the other three corners.</p>",
       borders: true, path: true
     },
     {
-      text: "<p>Now read the walk's shoulder. The stones pressed against one side of the fence all share a colour, and they form a connected chain — consecutive fence edges share a tile. The walk runs corner to corner, so this chain runs edge to edge: the stones marked in gold are a winning chain, found on a board about which we assumed nothing. Shuffle and press Next again; a winner appears every time, because one must.</p>",
+      text: "<p>The cells of one colour along the walk form a connected set that joins that colour's two edges. It contains a crossing for that player, outlined in red.</p>",
       borders: true, path: true, chain: true
     }
   ];
@@ -151,7 +151,7 @@
       figureSvgEl.textContent = "";
       figureSvgEl.appendChild(lemmaFigure());
       figureCapEl.textContent =
-        "Three tiles meet at every corner point. Colours split two against one: exactly two fence edges, one way in, one way out (left). All three alike: no fence (right).";
+        "Left: colours split two against one, two fences. Right: all three alike, no fence.";
     }
     backBtn.disabled = step === 0;
     nextBtn.disabled = step === steps.length - 1;

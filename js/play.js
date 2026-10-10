@@ -40,7 +40,7 @@
     var w = Hex.winner(board);
     if (w) {
       finished = true;
-      setStatus("<strong>" + playerName(w) + " wins.</strong> The winning chain is marked in gold — and notice the board didn't need to be full.");
+      setStatus("<strong>" + playerName(w) + " wins.</strong> The winning chain is outlined.");
     } else {
       turn = turn === Hex.BLACK ? Hex.WHITE : Hex.BLACK;
       setStatus(playerName(turn) + " to move.");
@@ -54,7 +54,7 @@
     turn = Hex.BLACK;
     history = [];
     finished = false;
-    setStatus("Black to move. Black connects top to bottom; White, left to right.");
+    setStatus("Black to move.");
     render();
   }
 
