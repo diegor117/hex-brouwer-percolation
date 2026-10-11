@@ -23,7 +23,8 @@
 
 <section id="play">
   <h2>1. Hex board</h2>
-  <p>A board for two players at one computer. Black moves first and connects the top and bottom edges; White connects the left and right edges.</p>
+  <p>Play against a friend at one computer, or against a simple computer opponent. Black moves first and connects the top and bottom edges; White connects the left and right edges.</p>
+  <p class="note">The computer plays the move that most shortens its own shortest path between its edges and lengthens yours. It looks only one move ahead, so it can be beaten, even when it plays Black. By Nash's strategy-stealing argument Black has a winning strategy on every board (a draw is impossible by the Hex theorem), but no explicit one is known beyond small boards.</p>
   <div class="controls">
     <label class="ctl">Board
       <select id="play-size">
@@ -33,11 +34,17 @@
         <option value="13">13 × 13</option>
       </select>
     </label>
+    <label class="ctl">Opponent
+      <select id="play-opponent">
+        <option value="human">another person</option>
+        <option value="bot-white" selected>computer (plays White)</option>
+        <option value="bot-black">computer (plays Black)</option>
+      </select>
+    </label>
     <button id="play-undo">Undo</button>
     <button id="play-new">New game</button>
-    <span class="spacer"></span>
-    <p class="status" id="play-status"></p>
   </div>
+  <p class="status" id="play-status"></p>
   <div class="board-wrap" id="play-board"></div>
 </section>
 
@@ -134,6 +141,7 @@
 <script src="js/hex.js"></script>
 <script src="js/board-svg.js"></script>
 <script src="js/maps.js"></script>
+<script src="js/bot.js"></script>
 <script src="js/play.js"></script>
 <script src="js/proof.js"></script>
 <script src="js/gale.js"></script>

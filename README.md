@@ -41,7 +41,7 @@ cd paper && latexmk -pdf hex-brouwer.tex
 ## Simulations
 
 No build step and no dependencies. Open `index.html` in a browser or serve the
-directory (`python3 -m http.server`). The page contains a two-player board,
+directory (`python3 -m http.server`). The page contains a Hex board (two players, or one player against a simple computer opponent),
 a step-by-step version of Gale's walk, Gale's colouring of the square for a
 chosen map and ε, and a Monte Carlo simulator for θ_n(p).
 
@@ -55,7 +55,8 @@ css/style.css           its stylesheet
 js/hex.js               board logic: win detection, Gale's walk (no DOM code, also used by Node)
 js/maps.js              the three sample maps of the square
 js/board-svg.js         SVG board renderer
-js/play.js              two-player board
+js/play.js              playable board
+js/bot.js               computer opponent (shortest-path heuristic; no DOM code, also used by Node)
 js/proof.js             step-by-step walk
 js/gale.js              Gale's colouring
 js/percolation.js       Monte Carlo simulator
@@ -90,6 +91,8 @@ node test/logic.test.js
 - The same colouring with the directions reversed (cells with large
   horizontal displacement given to Black) produces a black crossing for the
   `fold` map, so the assignment of directions in the proof is needed.
+- Computer opponent: takes a win in one, blocks a loss in one, and beats a
+  uniformly random player in all 40 games (n = 7 and 11, both colours).
 
 ## Status of the claims
 
