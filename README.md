@@ -3,7 +3,9 @@
 <table>
   <tr>
     <td>
-      <img width="450" alt="Interactive Hex board and Gale's walk" src="https://github.com/user-attachments/assets/17460da9-e303-46d2-9239-76f25cd38324" />
+      <a href="https://diegor117.github.io/hex-brouwer-percolation/">
+        <img width="450" alt="Interactive Hex board and Gale's walk" src="https://github.com/user-attachments/assets/17460da9-e303-46d2-9239-76f25cd38324" />
+      </a>
     </td>
     <td valign="middle">
       <b><a href="https://diegor117.github.io/hex-brouwer-percolation/">▶ Try the live simulations</a></b>
