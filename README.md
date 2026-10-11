@@ -22,7 +22,8 @@ classical results:
    fixed-point theorem for the square from the Hex theorem.
 3. **A crossing probability.** If each cell of an $`n \times n`$ board is black with
    probability $`p`$, the probability $`\theta_n(p)`$ of a black top-to-bottom crossing
-   satisfies $`\theta_n(p) + \theta_n(1-p) = 1`$, so $`\theta_n(1/2) = 1/2`$ for every $`n`$.
+   satisfies $`\theta_n(p) + \theta_n(1-p) = 1`$, so $`\theta_n(1{/}2) = 1{/}2`$ for every $`n`$.
+
 The results are not new. The paper is in `paper/hex-brouwer.pdf`; the
 simulations are in `index.html`.
 
