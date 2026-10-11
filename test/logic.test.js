@@ -275,6 +275,56 @@ for (const [R, C] of [[2, 3], [3, 4], [4, 5]]) {
   console.log("reversed rule: fold gives a black crossing for all 9 (mesh, eps) cases");
 }
 
+// Computer opponent (js/bot.js): takes a win in one, blocks a loss in one,
+// and beats a uniformly random player from either side.
+{
+  global.Hex = Hex;
+  const Bot = require("../js/bot.js");
+  const { EMPTY } = Hex;
+
+  let b = new Board(7);
+  for (let c = 0; c < 7; c++) if (c !== 4) b.set(3, c, WHITE);
+  for (let c = 0; c < 6; c++) b.set(1, c, BLACK);
+  let mv = Bot.chooseMove(b, WHITE);
+  assert(mv[0] === 3 && mv[1] === 4, `bot missed a win in one (played ${mv})`);
+
+  b = new Board(7);
+  for (let r = 0; r < 7; r++) if (r !== 5) b.set(r, 2, BLACK);
+  for (let r = 0; r < 4; r++) b.set(r, 5, WHITE);
+  mv = Bot.chooseMove(b, WHITE);
+  assert(mv[0] === 5 && mv[1] === 2, `bot did not block a loss in one (played ${mv})`);
+
+  let seed = 11;
+  const rng = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+  let games = 0, wins = 0;
+  for (const n of [7, 11]) {
+    for (const botColor of [BLACK, WHITE]) {
+      for (let g = 0; g < 10; g++) {
+        const bd = new Board(n);
+        let turn = BLACK, w = 0;
+        while (!w) {
+          let m;
+          if (turn === botColor) m = Bot.chooseMove(bd, turn, rng);
+          else {
+            const empty = [];
+            for (let i = 0; i < n * n; i++) if (bd.cells[i] === EMPTY) empty.push(i);
+            const i = empty[Math.floor(rng() * empty.length)];
+            m = [Math.floor(i / n), i % n];
+          }
+          bd.set(m[0], m[1], turn);
+          w = Hex.winner(bd);
+          turn = turn === BLACK ? WHITE : BLACK;
+        }
+        games++;
+        if (w === botColor) wins++;
+      }
+    }
+  }
+  assert(wins === games, `bot won only ${wins}/${games} games against a random player`);
+  console.log(`bot: wins in one, blocks in one, beat a random player in ${wins}/${games} games`);
+
+}
+
 if (failures === 0) {
   console.log("\nAll checks passed.");
 } else {
