@@ -20,10 +20,9 @@ classical results:
    exactly one of the two players.
 2. **Gale's proof of Brouwer's theorem.** Gale (1979) derived the Brouwer
    fixed-point theorem for the square from the Hex theorem.
-3. **A crossing probability.** If each cell of an n × n board is black with
-   probability p, the probability θ_n(p) of a black top-to-bottom crossing
-   satisfies θ_n(p) + θ_n(1 − p) = 1, so θ_n(1/2) = 1/2 for every n.
-
+3. **A crossing probability.** If each cell of an $`n \times n`$ board is black with
+   probability $`p`$, the probability $`\theta_n(p)`$ of a black top-to-bottom crossing
+   satisfies $`\theta_n(p) + \theta_n(1-p) = 1`$, so $`\theta_n(1/2) = 1/2`$ for every $`n`$.
 The results are not new. The paper is in `paper/hex-brouwer.pdf`; the
 simulations are in `index.html`.
 
