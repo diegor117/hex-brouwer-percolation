@@ -165,12 +165,20 @@
     stopBtn.disabled = true;
   }
 
+  // Draw a fresh board for the current size and p without counting it,
+  // so the picture always matches the controls.
+  function preview() {
+    var board = Hex.randomFullBoard(n(), p());
+    renderBoard(board, Hex.winner(board));
+  }
+
   pSlider.addEventListener("input", function () {
     pLabel.textContent = p().toFixed(2);
     stopRun();
     resetTally();
+    preview();
   });
-  sizeSel.addEventListener("change", function () { stopRun(); resetTally(); });
+  sizeSel.addEventListener("change", function () { stopRun(); resetTally(); preview(); });
   oneBtn.addEventListener("click", function () { sampleOne(true); updateReadout(); drawChart(); });
   runBtn.addEventListener("click", startRun);
   stopBtn.addEventListener("click", stopRun);
